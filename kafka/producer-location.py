@@ -16,7 +16,8 @@ p = Producer({'bootstrap.servers': 'localhost:9092'})
 with open('../textInputSources/locationSource.csv', 'r') as f:
     reader = csv.DictReader(f)
     for row in reader:
-        location_data = LocationData(row['x'], row['y'], row['t'])
+        print(row.keys())  # Print the keys of the row
+        location_data = LocationData(int(row['x']), int(row['y']), int(row['t']))
         p.produce('location-topic', location_data.serialize())
 
 p.flush()
