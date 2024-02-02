@@ -13,12 +13,16 @@ class LocationData:
         return cls(**params)
 
 c = Consumer({
-    'bootstrap.servers': 'localhost:9092',
-    'group.id': 'mygroup',
+    'bootstrap.servers': 'glider.srvs.cloudkafka.com:9094',
+    'sasl.mechanisms': 'SCRAM-SHA-512',
+    'security.protocol': 'SASL_SSL',
+    'sasl.username': 'ozlwmnls',
+    'sasl.password': 'nd4YYjvGiOsZgzlHRUG9cedDoPJJOyfQ',
+    'group.id': 'ozlwmnls-mygroup',
     'auto.offset.reset': 'earliest'
 })
 
-c.subscribe(['location-topic'])
+c.subscribe(['ozlwmnls-location-topic'])
 
 while True:
     msg = c.poll(1.0)
