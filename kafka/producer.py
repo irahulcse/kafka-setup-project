@@ -43,8 +43,11 @@ def delivery_report(err, msg):
 
 # Initialize the Producer
 p = Producer({
-    'bootstrap.servers': 'localhost:9092', 
-    'queue.buffering.max.messages': 200000,
+    'bootstrap.servers': 'glider.srvs.cloudkafka.com:9094',
+    'sasl.mechanisms': 'SCRAM-SHA-512',
+    'security.protocol': 'SASL_SSL',
+    'sasl.username': 'ozlwmnls',
+    'sasl.password': 'nd4YYjvGiOsZgzlHRUG9cedDoPJJOyfQ',
 })
 
 # Produce LocationData
@@ -52,7 +55,7 @@ with open('../textInputSources/locationSource.csv', 'r') as f:
     reader = csv.DictReader(f)
     for row in reader:
         location_data = LocationData(int(row['x']), int(row['y']), int(row['t']))
-        p.produce('location-topic', location_data.serialize())
+        p.produce('ozlwmnls-location-topic', location_data.serialize())
 
 # Produce LidarData
 for filename in os.listdir('../Lidar_data'):
@@ -62,7 +65,7 @@ for filename in os.listdir('../Lidar_data'):
             for line in lines:
                 x, y, z, CosAngle, ObjIdx, ObjTag = map(float, line.split())
                 lidar_data = LidarData(x, y, z, CosAngle, int(ObjIdx), int(ObjTag))
-                p.produce('lidar-topic', lidar_data.serialize())
+                p.produce('ozlwmnls-lidar-topic', lidar_data.serialize())
                 p.flush()
 
 p.flush()
@@ -72,7 +75,7 @@ with open('../textInputSources/generatedSpeed.csv', 'r') as f:
     reader = csv.DictReader(f)
     for row in reader:
         speed_data = SpeedData(float(row['v']))
-        p.produce('speed-topic', speed_data.serialize(), callback=delivery_report)
+        p.produce('ozlwmnls-speed-topic', speed_data.serialize(), callback=delivery_report)
         p.flush()
 
 p.flush()
