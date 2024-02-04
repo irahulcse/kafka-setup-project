@@ -24,6 +24,23 @@ class LidarData:
     def serialize(self):
         return json.dumps(self.__dict__)
 
+
+class SpeedData:
+    def __init__(self, v):
+        self.v = v
+
+    def serialize(self):
+        return json.dumps(self.__dict__)
+
+
+def delivery_report(err, msg):
+    """ Called once for each message produced to indicate delivery result.
+        Triggered by poll() or flush(). """
+    if err is not None:
+        print('Message delivery failed: {}'.format(err))
+    else:
+        print('Message delivered to {} [{}]'.format(msg.topic(), msg.partition()))
+
 # Initialize the Producer
 p = Producer({
     'bootstrap.servers': 'localhost:9092', 
@@ -46,5 +63,16 @@ for filename in os.listdir('../Lidar_data'):
                 x, y, z, CosAngle, ObjIdx, ObjTag = map(float, line.split())
                 lidar_data = LidarData(x, y, z, CosAngle, int(ObjIdx), int(ObjTag))
                 p.produce('lidar-topic', lidar_data.serialize())
+                p.flush()
+
+p.flush()
+
+# Produce SpeedData
+with open('../textInputSources/generatedSpeed.csv', 'r') as f:
+    reader = csv.DictReader(f)
+    for row in reader:
+        speed_data = SpeedData(float(row['v']))
+        p.produce('speed-topic', speed_data.serialize(), callback=delivery_report)
+        p.flush()
 
 p.flush()
