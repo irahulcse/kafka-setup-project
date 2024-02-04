@@ -26,13 +26,29 @@ class LidarData:
         params = json.loads(data)
         return cls(**params)
 
+class SpeedData:
+    def __init__(self, v):
+        self.v = v
+
+    @classmethod
+    def deserialize(cls, data):
+        params = json.loads(data)
+        return cls(**params)
+
+
 c = Consumer({
-    'bootstrap.servers': 'localhost:9092',
-    'group.id': 'mygroup',
+     'bootstrap.servers': 'glider.srvs.cloudkafka.com:9094',
+    'sasl.mechanisms': 'SCRAM-SHA-512',
+    'security.protocol': 'SASL_SSL',
+    'sasl.username': 'ozlwmnls',
+    'sasl.password': 'nd4YYjvGiOsZgzlHRUG9cedDoPJJOyfQ',
+    'group.id': 'ozlwmnls-mygroup',
     'auto.offset.reset': 'earliest'
 })
 
-c.subscribe(['location-topic', 'lidar-topic'])
+c.subscribe(['ozlwmnls-location-topic', 'ozlwmnls-lidar-topic', 'ozlwmnls-speed-topic'])
+# c.subscribe(['ozlwmnls-location-topic', 'ozlwmnls-speed-topic'])
+
 
 while True:
     msg = c.poll(1.0)
@@ -42,10 +58,12 @@ while True:
         print("Consumer error: {}".format(msg.error()))
         continue
 
-    if msg.topic() == 'location-topic':
+    if msg.topic() == 'ozlwmnls-location-topic':
         data = LocationData.deserialize(msg.value().decode('utf-8'))
-    elif msg.topic() == 'lidar-topic':
+    elif msg.topic() == 'ozlwmnls-lidar-topic':
         data = LidarData.deserialize(msg.value().decode('utf-8'))
+    elif msg.topic() == 'ozlwmnls-speed-topic':
+        data = SpeedData.deserialize(msg.value().decode('utf-8'))
 
     print(f'Received message on topic {msg.topic()}: {data.__dict__}')
 
