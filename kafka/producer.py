@@ -2,6 +2,18 @@ import os
 import csv
 import json
 from confluent_kafka import Producer
+import base64
+
+
+class ImageData:
+    def __init__(self, filename, content):
+        self.filename = filename
+        self.content = content  # Base64-encoded image content
+
+    def serialize(self):
+        return json.dumps(self.__dict__)
+
+
 
 class LocationData:
     def __init__(self, x, y, t):
@@ -76,3 +88,14 @@ with open('../textInputSources/generatedSpeed.csv', 'r') as f:
         p.flush()
 
 p.flush()
+
+
+# Produce ImageData
+for filename in os.listdir('../image_resources/images/'):
+    if filename.endswith('.png'):  # Assuming the images are PNGs
+        with open(os.path.join('../image_resources/images/', filename), 'rb') as f:
+            content = base64.b64encode(f.read()).decode('utf-8')
+        image_data = ImageData(filename, content)
+        p.produce('image-topic', image_data.serialize(), callback=delivery_report)
+        p.flush()
+
