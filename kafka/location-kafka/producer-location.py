@@ -13,7 +13,7 @@ class LocationData:
 
 p = Producer({'bootstrap.servers': 'localhost:9092'})
 
-with open('../textInputSources/locationSource.csv', 'r') as f:
+with open('../../textInputSources/locationSource.csv', 'r') as f:
     reader = csv.DictReader(f)
     for row in reader:
         print(row.keys())  # Print the keys of the row

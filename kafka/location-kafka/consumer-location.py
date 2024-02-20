@@ -13,7 +13,8 @@ class LocationData:
         return cls(**params)
 
 c = Consumer({
-    'bootstrap.servers': 'localhost:9092',
+    'bootstrap.servers': '192.168.221.213:9092',
+    # 'bootstrap.servers': 'localhost:9092',
     'group.id': 'mygroup',
     'auto.offset.reset': 'earliest'
 })
@@ -28,7 +29,10 @@ while True:
         print("Consumer error: {}".format(msg.error()))
         continue
 
-    location_data = LocationData.deserialize(msg.value().decode('utf-8'))
-    print('Received message: {}'.format(location_data.__dict__))
+    try:
+        location_data = LocationData.deserialize(msg.value().decode('utf-8'))
+        print('Received message: {}'.format(location_data.__dict__))
+    except json.decoder.JSONDecodeError:
+        print(f"Unable to parse message: {msg.value()}")
 
 c.close()
