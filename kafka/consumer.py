@@ -57,6 +57,7 @@ class SpeedData:
 
 c = Consumer({
     'bootstrap.servers': 'localhost:9092',
+    # 'bootstrap.servers': '192.168.221.213:9092',
     'group.id': 'mygroup',
     'auto.offset.reset': 'earliest'
 })

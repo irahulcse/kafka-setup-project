@@ -22,7 +22,7 @@ p = Producer({'bootstrap.servers': 'localhost:9092',
 # Assuming all .ply files are in the Lidar_data folder
 for filename in os.listdir('../../Lidar_data'):
     if filename.endswith('.ply'):
-        with open(os.path.join('../Lidar_data', filename), 'r') as f:
+        with open(os.path.join('../../Lidar_data', filename), 'r') as f:
             lines = f.readlines()[10:]  # Skip header
             for line in lines:
                 x, y, z, CosAngle, ObjIdx, ObjTag = map(float, line.split())
