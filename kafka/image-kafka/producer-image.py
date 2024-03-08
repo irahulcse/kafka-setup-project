@@ -18,7 +18,7 @@ def delivery_report(err, msg):
         print('Message delivered to {} [{}]'.format(msg.topic(), msg.partition()))
 
 p = Producer({
-    'bootstrap.servers': 'localhost:9092', 
+    'bootstrap.servers': '192.168.221.213:9092', 
     'queue.buffering.max.messages': 200000,
 })
 
@@ -28,6 +28,6 @@ for filename in os.listdir('../../image_resources/images/'):
             content = base64.b64encode(f.read()).decode('utf-8')
         image_data = ImageData(filename, content)
         p.produce('image-topic', image_data.serialize(), callback=delivery_report)
-        p.flush()
+        p.flush()  # Ensure the message is immediately sent
 
 p.flush()
